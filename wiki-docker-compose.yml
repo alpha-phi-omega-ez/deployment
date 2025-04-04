@@ -1,0 +1,39 @@
+services:
+
+  db:
+    image: postgres:17-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_DB: wiki
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_USER: wikijs
+    logging:
+      driver: "none"
+    restart: unless-stopped
+    networks:
+      - apo
+    volumes:
+      - /home/apoadmin/postgres:/var/lib/postgresql/data
+
+  wiki:
+    image: ghcr.io/requarks/wiki
+    container_name: wiki
+    restart: unless-stopped
+    ports:
+      - 8888:3000
+    environment:
+      DB_TYPE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: wikijs
+      DB_PASS: ${DB_PASS}
+      DB_NAME: wiki
+      LOG_LEVEL: info
+    networks:
+      - apo
+    depends_on:
+      - db
+
+networks:
+  apo:
+    external: true
