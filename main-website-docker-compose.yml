@@ -1,0 +1,101 @@
+services:
+      
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - /home/apoadmin/mongodb:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    networks:
+      - apo
+
+  backend:
+    image: ghcr.io/alpha-phi-omega-ez/backend
+    container_name: backend
+    restart: unless-stopped
+    ports:
+      - 9000:9000
+    environment:
+      MONGO_DETAILS: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017
+      FRONTEND_URL: https://apoez.org
+      BACKEND_URL: https://apoez.org/api
+      ORIGINS: https://apoez.org
+      SECRET_KEY: ${BACKEND_SECRET_KEY}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      ROOT_PATH: /api
+      SENTRY_DSN: ${BACKEND_SENTRY_DSN}
+      SENTRY_TRACE_RATE: 1.0
+      SENTRY_PROFILE_RATE: 1.0
+    networks:
+      - apo
+    depends_on:
+      - mongodb
+
+  frontend:
+    image: ghcr.io/alpha-phi-omega-ez/frontend
+    container_name: frontend
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    networks:
+      - apo
+    depends_on:
+      - backend
+      
+  nginx-proxy-manager:
+    image: jc21/nginx-proxy-manager:latest
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - ${PUBLIC_IP}:80:80 # Public HTTP Port
+      - ${PUBLIC_IP}:443:443 # Public HTTPS Port
+      - 8081:81 # Admin Web Port
+    volumes:
+      - /home/apoadmin/nginx-proxy-manager/data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    networks:
+      - apo
+    depends_on:
+      - backend
+      - frontend
+
+  backtest-compilation:
+    image: ghcr.io/alpha-phi-omega-ez/backtest-compilation
+    container_name: backtest_compilation
+    restart: always
+    environment:
+      DELEGATE_EMAIL: ${BACKTEST_DELEGATE_EMAIL}
+      FOLDER_ID: ${BACKTEST_FOLDER_ID}
+      MONGO_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017
+      SHEET_URL: ${BACKTEST_SHEET}
+      LOG_LEVEL: INFO
+      SENTRY_DSN: ${BACKTEST_SENTRY_DSN}
+      SENTRY_TRACE_RATE: 1.0
+    volumes:
+      - /home/apoadmin/backtest-compilation/config:/app/config
+      - /home/apoadmin/backtest-compilation/cache:/app/cache
+    networks:
+      - apo
+    depends_on:
+      - mongodb
+
+  bmoc:
+    image: ghcr.io/alpha-phi-omega-ez/bmoc
+    container_name: bmoc
+    restart: unless-stopped
+    environment:
+      REACT_APP_BACKEND_SERVER: https://bmoc.apoez.org
+    ports:
+      - 4000:3000
+    networks:
+      - apo
+
+networks:
+  apo:
+    external: true
