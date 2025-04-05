@@ -17,7 +17,6 @@ services:
 
   dozzle:
     image: amir20/dozzle
-    container-name: dozzle
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
