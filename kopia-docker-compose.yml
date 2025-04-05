@@ -1,0 +1,29 @@
+services:
+    kopia:
+        image: kopia/kopia:latest
+        container_name: Kopia
+        hostname: kopia-server
+        restart: unless-stopped
+        ports:
+            - 51515:51515
+        command:
+            - server
+            - start
+            - --disable-csrf-token-checks
+            - --insecure
+            - --address=0.0.0.0:51515
+            - --server-username=${USER}
+            - --server-password=${PASSWORD}
+        environment:
+            KOPIA_PASSWORD: ${KOPIA_PASSWORD} 
+            B2_BUCKET: ${B2_BUCKET}
+            B2_KEY_ID: ${B2_KEY_ID}
+            B2_KEY: ${B2_KEY}
+            TZ: "America/New_York"
+        volumes:
+            - /home/apoadmin/kopia/config:/app/config
+            - /home/apoadmin/kopia/cache:/app/cache
+            - /home/apoadmin/kopia/logs:/app/logs
+            - /home/apoadmin:/data:ro
+            - /tmp:/tmp:shared
+
