@@ -1,0 +1,41 @@
+services:
+  photo-discord-bot:
+    image: ghcr.io/alpha-phi-omega-ez/photo-discord-bot
+    container-name: photo-discord-bot
+    restart: unless-stopped
+    volumes:
+      - /home/apoadmin/photo-bot:/app/config
+    environment:
+      DISCORD_TOKEN: ${DISCORD_TOKEN}
+      CHANNEL_NAME: ${CHANNEL_NAME}
+      PARENT_FOLDER_ID: ${PARENT_FOLDER_ID}
+      SHARED_DRIVE_ID: ${SHARED_DRIVE_ID}
+      GUILD_ID: ${GUILD_ID}
+      VIDEO_IN_MEMORY: ${VIDEO_IN_MEMORY}
+      DELEGATE_EMAIL: ${DELEGATE_EMAIL}
+      SENTRY_DSN: ${SENTRY_DSN}
+
+  dozzle:
+    image: amir20/dozzle
+    container-name: dozzle
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
+
+  watchtower:
+    image: containrrr/watchtower
+    container-name: watchtower
+    command:
+      - --cleanup=true
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  josiah-frank:
+    image: ghcr.io/alpha-phi-omega-ez/josiah-frank-history
+    container-name: josiah-frank
+    restart: unless-stopped
+    ports:
+      - 7000:80
