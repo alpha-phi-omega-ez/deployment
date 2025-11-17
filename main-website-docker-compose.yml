@@ -15,7 +15,7 @@ services:
       - apo
   
   valkey:
-    image: valkey/valkey:8-alpine3.22
+    image: ghcr.io/valkey-io/valkey:9-alpine3.22
     container_name: valkey
     restart: unless-stopped
     ports:
