@@ -1,7 +1,7 @@
 services:
       
   mongodb:
-    image: mongo:8-noble
+    image: dhi.io/mongodb:8
     container_name: mongodb
     restart: unless-stopped
     ports:
@@ -15,7 +15,7 @@ services:
       - apo
   
   valkey:
-    image: ghcr.io/valkey-io/valkey:9-alpine3.22
+    image: dhi.io/valkey:9
     container_name: valkey
     restart: unless-stopped
     ports:
