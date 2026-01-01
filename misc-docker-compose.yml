@@ -26,7 +26,7 @@ services:
       - 8080:8080
 
   watchtower:
-    image: containrrr/watchtower
+    image: nickfedor/watchtower
     container_name: watchtower
     command:
       - --cleanup=true
