@@ -1,7 +1,7 @@
 services:
 
   db:
-    image: postgres:17-alpine
+    image: dhi.io/postgres:17
     container_name: postgres
     environment:
       POSTGRES_DB: wiki
