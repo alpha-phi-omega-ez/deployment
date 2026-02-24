@@ -19,7 +19,7 @@ services:
     image: dhi.io/valkey:9
     container_name: valkey
     restart: unless-stopped
-    command: ["valkey-server", "--requirepass", "${VALKEY_PASSWORD}", "--bind_ip_all"]
+    command: ["valkey-server", "--requirepass", "${VALKEY_PASSWORD}"]
     ports:
       - 6379:6379
     networks:
