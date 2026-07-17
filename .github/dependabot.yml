@@ -1,9 +1,11 @@
 version: 2
 updates:
-  - package-ecosystem: "docker"
+  - package-ecosystem: "docker-compose"
     directory: "/"
     schedule:
       interval: "monthly"
+    commit-message:
+      prefix: "chore(dep docker-compose)"
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
