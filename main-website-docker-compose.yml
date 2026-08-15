@@ -57,6 +57,8 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
+    environment:
+      SITE_URL: https://apoez.org
     networks:
       - apo
     depends_on:
